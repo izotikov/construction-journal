@@ -4,15 +4,9 @@ import { env } from "../../../config/env";
 import ms from "ms";
 
 
-export const generateAccessToken = (res: Response, id: number, email: string) => {
-  const token = jwt.sign({ id, email }, env.JWT_SECRET, { expiresIn: env.JWT_SECRET_EXPIRES_IN });
-
-  res.cookie("accessToken", token, {
-    httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: ms(env.JWT_SECRET_EXPIRES_IN),
-    path: "/",
+export const generateAccessToken = (id: number, email: string) => {
+  return jwt.sign({ id, email }, env.JWT_SECRET, {
+    expiresIn: env.JWT_SECRET_EXPIRES_IN,
   });
 };
 
@@ -31,6 +25,5 @@ export const generateRefreshToken = (res: Response, id: number, email: string) =
 };
 
 export const clearJWT = (res: Response) => {
-  res.clearCookie('accessToken');
   res.clearCookie('refreshToken');
 };

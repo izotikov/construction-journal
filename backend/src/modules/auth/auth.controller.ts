@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as AuthService from './auth.service';
+import type { AuthRequest } from '../../middlewares/auth.middleware';
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
@@ -31,9 +32,13 @@ export async function refreshToken(req: Request, res: Response, next: NextFuncti
     const userId = (req as any).user?.id;
     const refreshToken = req.cookies.refreshToken;
 
-    await AuthService.refreshToken(res, userId, refreshToken);
-    res.status(200).json({message: "Access token refreshed successfully"});
+    const {accessToken} = await AuthService.refreshToken(res, userId, refreshToken);
+    res.status(200).json({message: "Access token refreshed successfully", accessToken});
   } catch (error) {
     next(error);
   }
+}
+
+export function getMe(req: AuthRequest, res: Response, next: NextFunction) {
+  res.status(200).json({ user: req.user });
 }

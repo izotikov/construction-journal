@@ -19,7 +19,7 @@ export async function login(res: Response, email: string, password: string) {
     throw new AppError(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS, 401, ERROR_CODES.AUTH.INVALID_CREDENTIALS);
   }
 
-  generateAccessToken(res, user.id, user.email);
+  const accessToken = generateAccessToken(user.id, user.email);
   const refreshToken = generateRefreshToken(res, user.id, user.email);
 
   await prisma.user.update({
@@ -27,7 +27,7 @@ export async function login(res: Response, email: string, password: string) {
     data: { refreshToken }
   })
 
-  return { user: { id: user.id, email: user.email, name: user.name } };
+  return { user: { id: user.id, email: user.email, name: user.name }, accessToken };
 }
 
 export async function logout(res: Response, userId: number) {
@@ -46,7 +46,7 @@ export async function refreshToken(res: Response, userId: number, refreshToken: 
     where: { id: userId }
   });
 
-  if (!user || !user.refreshToken) {
+  if (!user || !user.refreshToken || !refreshToken) {
     throw new AppError(ERROR_MESSAGES.AUTH.MISSING_TOKEN, 401, ERROR_CODES.AUTH.MISSING_TOKEN);
   }
 
@@ -55,6 +55,6 @@ export async function refreshToken(res: Response, userId: number, refreshToken: 
   }
 
   // Генерируем новый accessToken
-  generateAccessToken(res, user.id, user.email);
-
+  const accessToken = generateAccessToken(user.id, user.email);
+  return { accessToken };
 }

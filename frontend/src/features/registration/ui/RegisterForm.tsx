@@ -12,6 +12,7 @@ import { InlineLink } from "@shared/ui/inline-link/InlineLink";
 import { Button } from "@shared/ui/shadcn/button/Button";
 import { RegisterFormData } from "@features/registration/model/schema/registerFormSchema";
 import { ConfirmField } from "@shared/ui/confirm-field/ConfirmField";
+import { UsernameField } from "./UsernameField";
 
 
 export const RegisterForm = () => {
@@ -53,6 +54,7 @@ export const RegisterForm = () => {
           </FieldLegend>
 
           <FieldGroup className="space-y-4">
+            <UsernameField<RegisterFormData> />
             <EmailField<RegisterFormData> />
             <PasswordField<RegisterFormData> />
             <ConfirmField<RegisterFormData>
@@ -73,7 +75,7 @@ export const RegisterForm = () => {
             size="lg"
             disabled={isSubmitting}
           >
-            Войти
+            Зарегистрироваться
           </Button>
         </FormLayout>
 

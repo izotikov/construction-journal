@@ -25,10 +25,13 @@ export const useLoginForm = () => {
 
   const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
     await handleFormSubmit(loginByEmail, data, setError, {
-      onSuccess: authenticate,
+      onSuccess: async (result) => {
+        await authenticate(result);
+      },
       getErrorMessage: (error) =>
         ERROR_MESSAGES[error.messageCode] ?? ERROR_MESSAGES['DEFAULT'],
     });
+
   };
 
   return {
