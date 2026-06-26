@@ -2,6 +2,7 @@ import { useAuthStore } from "@entities/auth/useAuthStore";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from './routeTree.gen';
 import { AuthProvider } from "@app/providers/AuthProvider";
+import { ToastContainer } from "react-toastify";
 
 const router = createRouter({ 
   routeTree, 
@@ -31,6 +32,7 @@ export function App() {
   return (
     <AuthProvider>
       <RouterWrapper />
+      <ToastContainer />
     </AuthProvider>
   );
 }

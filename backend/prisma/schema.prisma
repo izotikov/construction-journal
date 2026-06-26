@@ -15,5 +15,7 @@ model User {
   refreshToken String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  
+  isEmailVerified            Boolean   @default(false)
+  emailVerificationToken     String?
+  emailVerificationExpires   DateTime?
 }
