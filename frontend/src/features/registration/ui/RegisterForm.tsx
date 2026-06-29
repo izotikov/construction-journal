@@ -21,11 +21,12 @@ export const RegisterForm = () => {
     methods,
     handleSubmit,
     onSubmit,
+    isPending,
     rootError
   } = useRegisterForm();
 
   const {
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = methods;
 
   return (
@@ -73,9 +74,9 @@ export const RegisterForm = () => {
             type="submit"
             variant="form"
             size="lg"
-            disabled={isSubmitting}
+            disabled={isPending}
           >
-            Зарегистрироваться
+            {isPending ? 'Регистрация...' : 'Зарегистрироваться'}
           </Button>
         </FormLayout>
 

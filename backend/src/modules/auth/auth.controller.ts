@@ -1,6 +1,41 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as AuthService from './auth.service';
+import * as UserService from '../users/users.service';
 import type { AuthRequest } from '../../middlewares/auth.middleware';
+import { stripUser } from '../../utils/utils';
+import { env } from '../../config/env';
+
+export async function register(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, name, password } = req.body;
+    if (!email || !name || !password) {
+      res.status(400).json({ message: 'Email, name and password are required' });
+      return;
+    }
+    const result = await AuthService.register(email, name, password);
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function verifyEmail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { token } = req.query;
+    if (!token || typeof token !== 'string') {
+      return res.redirect(
+        `${env.CLIENT_URL}/verify-result?status=error&message=${encodeURIComponent('Токен не указан')}`
+      );
+    }
+    await AuthService.verifyEmail(token);
+    res.redirect(`${env.CLIENT_URL}/verify-result?status=success`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Ошибка подтверждения';
+    res.redirect(
+      `${env.CLIENT_URL}/verify-result?status=error&message=${encodeURIComponent(message)}`
+    );
+  }
+}
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
@@ -17,11 +52,15 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export async function logout(req: Request, res: Response, next: NextFunction) {
+export async function logout(req: AuthRequest, res: Response, next: NextFunction) {
   try {
-    const userId = (req as any).user?.id;
-    await AuthService.logout(res, userId);
-    res.status(200).json({ message: "Logout successful!" })
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    await AuthService.logout(res, req.user.id);
+
+    res.status(200).json({ message: "Logout successful!" });
   } catch (error) {
     next(error);
   }
@@ -39,6 +78,11 @@ export async function refreshToken(req: Request, res: Response, next: NextFuncti
   }
 }
 
-export function getMe(req: AuthRequest, res: Response, next: NextFunction) {
-  res.status(200).json({ user: req.user });
+
+export async function getMe(req: AuthRequest, res: Response, next: NextFunction) {
+  if (!req.user) return res.status(401).json({message: "Unauthorized"});
+  const user = await UserService.findById(req.user?.id);
+  if (!user) return res.status(404).json({message: "User not found"});
+  console.log(stripUser(user))
+  res.status(200).json({ user: stripUser(user)});
 }

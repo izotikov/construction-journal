@@ -3,6 +3,8 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from './routeTree.gen';
 import { AuthProvider } from "@app/providers/AuthProvider";
 import { ToastContainer } from "react-toastify";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@app/providers/queryClient";
 
 const router = createRouter({ 
   routeTree, 
@@ -19,6 +21,11 @@ declare module '@tanstack/react-router' {
 
 const RouterWrapper = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isInitialized = useAuthStore(state => state.isInitialized);
+
+  if (!isInitialized) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <RouterProvider
@@ -30,9 +37,11 @@ const RouterWrapper = () => {
 
 export function App() {
   return (
-    <AuthProvider>
-      <RouterWrapper />
-      <ToastContainer />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RouterWrapper />
+        <ToastContainer />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

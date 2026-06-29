@@ -1,31 +1,29 @@
 import { useAuthStore } from "@entities/auth/useAuthStore";
-import { getMe } from "@entities/user/api/getMe";
+import { useMe } from "@entities/user/model/hooks/useMe";
 import { useUserStore } from "@entities/user/model/useUserStore";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { setAccessToken, clearAuth, setAuthenticated } = useAuthStore();
-  const {setUser} = useUserStore();
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    setAuthenticated,
+    clearAuth,
+    setInitialized,
+  } = useAuthStore();
+  const { status } = useMe();
 
   useEffect(() => {
-    // При каждом старте/reload — пробуем восстановить сессию
-    getMe()
-      .then((user) => {
-        const token = useAuthStore.getState().accessToken;
-        setUser(user);
-        setAuthenticated(true);
-        setAccessToken(token);
-      })
-      .catch(() => {
-        clearAuth();
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+    if (status === 'success') {
+      setAuthenticated(true);
+      setInitialized(true);
+    }
 
-  if (isLoading) return <div>Loading...</div>;
+    if (status === 'error') {
+      clearAuth();
+      setInitialized(true);
+    }
+  }, [status]);
+
+  if (status === 'pending') return <div>Loading...</div>;
 
   return children;
 };

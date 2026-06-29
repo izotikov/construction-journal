@@ -6,8 +6,11 @@ import { handleFormSubmit } from "@shared/lib/form/handleFormSubmit";
 import { registerByEmail } from "@features/registration/model/services/registerByEmail";
 import { useRegistrationRedirect } from "./useRegistrationRedirect";
 import { toast } from 'react-toastify';
+import { useRegister } from "@features/registration/model/hooks/useRegister";
 
 export const useRegisterForm = () => {
+
+  const { mutateAsync: register, isPending } = useRegister();
 
   const methods = useForm<RegisterFormData>({
     defaultValues: {
@@ -24,19 +27,9 @@ export const useRegisterForm = () => {
     setError,
     handleSubmit,
   } = methods;
-  const { redirectToLogin } = useRegistrationRedirect();
-  const notify = () => toast.success('Регистрация прошла успешно!', {
-    position: 'bottom-right',
-  });
-
-  const redirectAndNotify = () => {
-    notify();
-    redirectToLogin();
-  }
 
   const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
-    await handleFormSubmit(registerByEmail, data, setError, {
-      onSuccess: redirectAndNotify,
+    await handleFormSubmit(register, data, setError, {
       getErrorMessage: (error) =>
         ERROR_MESSAGES[error.messageCode] ?? ERROR_MESSAGES['DEFAULT'],
     });
@@ -46,6 +39,7 @@ export const useRegisterForm = () => {
     methods,
     handleSubmit,
     onSubmit,
+    isPending,
     rootError: methods.formState.errors.root?.message ?? 'Произошла ошибка',
   };
 };

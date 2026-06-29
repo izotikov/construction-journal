@@ -4,7 +4,7 @@ import { stripUser } from '../../utils/utils';
 
 export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
   try {
-    const users = await UsersService.getAllUsers();
+    const users = await UsersService.findAll();
 
     res.status(200).json({ message: 'List of all users: ', users});
   } catch(error) {
@@ -13,44 +13,20 @@ export async function getAllUsers(req: Request, res: Response, next: NextFunctio
 }
 
 export async function getUser(req: Request, res: Response, next: NextFunction) {
-  const id = Number(req.params.id);
   try {
-    const user = await UsersService.getUser(id);
-
+    const id = Number(req.params.id);
+    const user = await UsersService.findById(id);
     if (!user) {
-      res.status(404).json({message: 'User not found'});
+      res.status(404).json({ message: 'User not found' });
       return;
     }
-
-    const safeUser = stripUser(user);
-
-    res.status(200).json({message: 'User found', safeUser});
-  } catch(error) {
-    next(error)
-  }
-}
-
-export async function registerUser(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { email, name, password } = req.body;
-
-    if (!email) {
-      res.status(400).json({ message: 'Email is required' });
-      return;
-    }
-
-    if (!name) {
-      res.status(400).json({message: 'Username is required'});
-      return;
-    }
-
-    const user = await UsersService.registerUser(email, name, password);
-
-    res.status(201).json({ message: 'User registered', user });
+    res.status(200).json({ message: 'User found', user: stripUser(user) });
   } catch (error) {
     next(error);
   }
 }
+
+
 
 export async function deleteUser(req: Request, res: Response, next: NextFunction) {
   try {
@@ -61,7 +37,7 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
       return;
     }
 
-    await UsersService.deleteUser(id);
+    await UsersService.remove(id);
 
     res.status(200).json({message: `User with id ${id} successfully deleted`});
 
@@ -73,27 +49,17 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
 export async function updateUser(req: Request, res: Response, next: NextFunction) {
   try {
     const id = Number(req.params.id);
-    const {name, email } = req.body;
-
+    const { name, email } = req.body;
     if (!id) {
-      res.status(400).json({ message: 'ID is required'});
+      res.status(400).json({ message: 'ID is required' });
       return;
     }
-
-    if (!name) {
-      res.status(400).json({ message: 'Username is required'});
+    if (!name || !email) {
+      res.status(400).json({ message: 'Name and email are required' });
       return;
     }
-
-    if (!email) {
-      res.status(400).json({message: 'Email is required'});
-      return;
-    }
-
-    const updateUser = await UsersService.updateUser(id, email, name);
-
-    res.status(200).json({message: `User updated`, user: updateUser});
-
+    const user = await UsersService.update(id, { email, name });
+    res.status(200).json({ message: 'User updated', user });
   } catch (error) {
     next(error);
   }
