@@ -1,53 +1,34 @@
 import { Prisma } from '../../../generated/prisma';
 import { AppError } from '../../errors/AppError';
-import { prisma } from '../../prisma/client';
-import bcrypt from 'bcrypt';
-import { stripUser } from '../../utils/utils';
 import { ERROR_MESSAGES } from '../../errors/errorMessages';
 import { ERROR_CODES } from '../../errors/errorRegistry';
+import { prisma } from '../../prisma/client';
 
-export async function getAllUsers() {
-  const users = await prisma.user.findMany();
-  return users;
+export async function findAll() {
+  return prisma.user.findMany();
 }
 
-export async function getUser(id: number) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id }
-    });
-    
-    return user;
-  } catch (error) {
-    throw error;
-  }
+export async function findById(id: number) {
+  return prisma.user.findUnique({ where: { id }});
 }
 
-export async function registerUser(email: string, name: string, password: string) {
-  const existing = await prisma.user.findUnique({
-    where: { email },
+export async function findByEmail(email: string) {
+  return prisma.user.findUnique({ where: { email } });
+}
+
+export async function findByVerificationToken(token: string) {
+  return prisma.user.findFirst({
+    where: { emailVerificationToken: token },
   });
-
-  if (existing) {
-    throw new AppError(ERROR_MESSAGES.USER.ALREADY_EXISTS, 400, ERROR_CODES.USER.ALREADY_EXISTS);
-  }
-
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  const user = await prisma.user.create({
-    data: { email, name, password: hashedPassword },
-  });
-
-  const safeUser = stripUser(user);
-  return safeUser;
 }
 
-export async function deleteUser(id: number) {
+export async function create(data: { email: string; name: string; password: string }) {
+  return prisma.user.create({ data });
+}
+
+export async function remove(id: number) {
   try {
-    await prisma.user.delete({
-      where: { id },
-    });
+    await prisma.user.delete({ where: { id } });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, 404, ERROR_CODES.USER.NOT_FOUND);
@@ -56,15 +37,28 @@ export async function deleteUser(id: number) {
   }
 }
 
-export async function updateUser(id: number, email: string, name: string) {
-  try {
-    const updateUser = await prisma.user.update({
-      where: { id },
-      data: {email, name }
-    });
+export async function update(id: number, data: Prisma.UserUpdateInput) {
+  return prisma.user.update({ where: { id }, data });
+}
 
-    return updateUser;
-  } catch (error) {
-    throw error;
-  }
+
+export async function saveVerificationToken(userId: number, token: string, expires: Date) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      emailVerificationToken: token,
+      emailVerificationExpires: expires,
+    },
+  });
+}
+
+export async function markAsVerified(userId: number) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      isEmailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+    },
+  });
 }

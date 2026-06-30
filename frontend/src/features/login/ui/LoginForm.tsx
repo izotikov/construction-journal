@@ -18,11 +18,12 @@ export const LoginForm = () => {
     methods,
     handleSubmit,
     onSubmit,
+    isPending,
     rootError
   } = useLoginForm();
 
   const {
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = methods;
 
   return (
@@ -63,9 +64,9 @@ export const LoginForm = () => {
             type="submit"
             variant="form"
             size="lg"
-            disabled={isSubmitting}
+            disabled={isPending}
           >
-            Войти
+            {isPending ? 'Вхожу...' : 'Войти'}
           </Button>
         </FormLayout>
 

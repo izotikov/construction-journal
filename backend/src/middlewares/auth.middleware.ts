@@ -6,13 +6,14 @@ import { ERROR_CODES } from '../errors/errorRegistry';
 import { ERROR_MESSAGES } from '../errors/errorMessages';
 
 export interface AuthRequest extends Request {
-  user?: { id: number; email: string; };
+  user?: { id: number; email: string; name: string };
   token?: string;
 }
 
 export interface DecodedToken { 
   id: number; 
   email: string; 
+  name: string;
 }
 
 export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {

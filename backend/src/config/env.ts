@@ -27,4 +27,7 @@ export const env = {
   JWT_SECRET_EXPIRES_IN,
   JWT_REFRESH_SECRET,
   JWT_REFRESH_EXPIRES_IN,
+  RESEND_API_KEY: process.env.RESEND_API_KEY as string,
+  CLIENT_URL: process.env.CLIENT_URL as string,
+  API_URL: process.env.API_URL as string,
 };
