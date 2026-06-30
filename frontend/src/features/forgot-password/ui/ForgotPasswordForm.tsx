@@ -5,14 +5,14 @@ import { Button } from "@shared/ui/shadcn/button/Button";
 import { FieldGroup, FieldLegend } from "@shared/ui/shadcn/field/Field";
 import { PersonIcon } from "@shared/ui/svg-react-icons/person-icon/PersonIcon";
 import { EmailField } from "@shared/ui/email-field/EmailField";
-import { PasswordField } from "@shared/ui/password-field/PasswordField";
 import { FormProvider } from "react-hook-form";
 import { AppearanceAnimation } from "@shared/ui/appearance-animation/AppearanceAnimation";
 import { ErrorField } from "@shared/ui/error-field/ErrorField";
-import { useLoginForm } from "@features/login/model/hooks/useLoginForm";
-import { LoginFormData } from "@features/login/model/schema/loginFormSchema";
+import { ForgotPasswordFormData } from "@features/forgot-password/model/schema/forgotPasswordFormSchema";
+import { TextParagraph } from "@shared/ui/text-paragraph/TextParagraph";
+import { useForgotPasswordForm } from "@features/forgot-password/model/hooks/useForgotPasswordForm";
 
-export const LoginForm = () => {
+export const ForgotPasswordForm = () => {
 
   const {
     methods,
@@ -20,7 +20,7 @@ export const LoginForm = () => {
     onSubmit,
     isPending,
     rootError
-  } = useLoginForm();
+  } = useForgotPasswordForm();
 
   const {
     formState: { errors },
@@ -48,12 +48,16 @@ export const LoginForm = () => {
 
         <FormLayout className="p-3">
           <FieldLegend className="sr-only">
-            Вход в систему
+            Сброс пароля
           </FieldLegend>
 
+          <TextParagraph className="text-text-primary text-center">
+            Введите адрес электронной почты, который вы указывали при регистрации, 
+            и мы вышлем на него ссылку для сброса пароля.
+          </TextParagraph>
+
           <FieldGroup className="space-y-4">
-            <EmailField<LoginFormData> />
-            <PasswordField<LoginFormData> forgotPasswordHref={'/forgot-password'}/>
+            <EmailField<ForgotPasswordFormData> />
           </FieldGroup>
 
           <AppearanceAnimation show={!!errors.root}>
@@ -66,14 +70,14 @@ export const LoginForm = () => {
             size="lg"
             disabled={isPending}
           >
-            {isPending ? 'Вхожу...' : 'Войти'}
+            {isPending ? 'Отправляю...' : 'Отправить'}
           </Button>
         </FormLayout>
 
         <InlineLink
-          text="Нет аккаунта?"
-          linkText="Зарегистрироваться"
-          to="/register"
+          text="Вернуться на"
+          linkText="страницу логина"
+          to="/login"
           className="mt-4"
         />
       </form>

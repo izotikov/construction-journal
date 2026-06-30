@@ -44,14 +44,14 @@ export const RegisterForm = () => {
               className="text-text-primary"
             />
           }
-          title="Добро пожаловать"
-          description="Войдите в свой аккаунт"
+          title="Зарегистрируйтесь"
+          description="Придумайте данные для регистрации в сервисе"
           className="mb-3"
         />
 
         <FormLayout className="p-3">
           <FieldLegend className="sr-only">
-            Вход в систему
+            Регистрация
           </FieldLegend>
 
           <FieldGroup className="space-y-4">

@@ -19,24 +19,6 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   }
 }
 
-export async function verifyEmail(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { token } = req.query;
-    if (!token || typeof token !== 'string') {
-      return res.redirect(
-        `${env.CLIENT_URL}/verify-result?status=error&message=${encodeURIComponent('Токен не указан')}`
-      );
-    }
-    await AuthService.verifyEmail(token);
-    res.redirect(`${env.CLIENT_URL}/verify-result?status=success`);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Ошибка подтверждения';
-    res.redirect(
-      `${env.CLIENT_URL}/verify-result?status=error&message=${encodeURIComponent(message)}`
-    );
-  }
-}
-
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body;
@@ -78,11 +60,55 @@ export async function refreshToken(req: Request, res: Response, next: NextFuncti
   }
 }
 
-
 export async function getMe(req: AuthRequest, res: Response, next: NextFunction) {
   if (!req.user) return res.status(401).json({message: "Unauthorized"});
   const user = await UserService.findById(req.user?.id);
   if (!user) return res.status(404).json({message: "User not found"});
-  console.log(stripUser(user))
   res.status(200).json({ user: stripUser(user)});
+}
+
+export async function verifyEmail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { token } = req.query;
+    if (!token || typeof token !== 'string') {
+      return res.redirect(
+        `${env.CLIENT_URL}/verify-result?status=error&message=${encodeURIComponent('Токен не указан')}`
+      );
+    }
+    await AuthService.verifyEmail(token);
+    res.redirect(`${env.CLIENT_URL}/verify-result?status=success`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Ошибка подтверждения';
+    res.redirect(
+      `${env.CLIENT_URL}/verify-result?status=error&message=${encodeURIComponent(message)}`
+    );
+  }
+}
+
+export async function resetPassword(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { token } = req.query;
+    const { newPassword } = req.body;
+
+    if (!token || typeof token !== 'string') {
+      return res.status(400).json({ message: 'Токен не указан' });
+    }
+
+    await AuthService.resetPassword(token, newPassword);
+    res.status(200).json({ message: 'Пароль успешно изменён' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function forgotPassword(req: Request, res: Response, next: NextFunction) {
+  try {
+    const {email} = req.body;
+
+    const message = await AuthService.forgotPassword(email);
+    res.status(200).json({ message: message });
+
+  } catch (error) {
+    next(error)
+  }
 }

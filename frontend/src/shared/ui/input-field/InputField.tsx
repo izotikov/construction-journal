@@ -4,6 +4,7 @@ import { Input } from "@shared/ui/shadcn/input/Input";
 import { InputHTMLAttributes } from "react";
 import { ErrorField } from "@shared/ui/error-field/ErrorField";
 import { AppearanceAnimation } from "@shared/ui/appearance-animation/AppearanceAnimation";
+import { Link } from "@tanstack/react-router";
 
 interface InputFieldProps
   extends InputHTMLAttributes<HTMLInputElement> {
@@ -23,12 +24,12 @@ export const InputField = ({id, label, className, link, error, ...props}: InputF
           {label}
         </FieldLabel>
         {link && (
-          <a
-            href={link.href}
+          <Link
+            to={link.href}
             className="text-xs text-text-link hover:text-text-link-hover active:text-text-link-active transition-colors"
           >
             {link.text}
-          </a>
+          </Link>
         )}
         
       </div>

@@ -2,6 +2,7 @@ import { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { apiInstance } from '@shared/api/base';
 import { useAuthStore } from '@entities/auth/useAuthStore';
 import { useUserStore } from '@entities/user/model/useUserStore';
+import { handleApiError } from '@shared/api/errors/handleApiError';
 
 apiInstance.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
@@ -13,19 +14,17 @@ apiInstance.interceptors.request.use((config) => {
 
 let isRefreshing = false;
 let queue: Array<{ resolve: (t: string) => void; reject: (e: unknown) => void }> = [];
+const AUTH_FLOW_ENDPOINTS = ['/auth/refresh-token', '/auth/login', '/auth/register'];
 
 apiInstance.interceptors.response.use(
   (response) => response,
 
   async (error: AxiosError) => {
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const isAuthFlowRequest = AUTH_FLOW_ENDPOINTS.some((url) => original.url?.includes(url));
+    
 
-    if (error.response?.status === 401 && !original._retry) {
-
-      if (original.url?.includes('/auth/refresh-token')) {
-        useAuthStore.getState().clearAuth();
-        return Promise.reject(error);
-      }
+    if (error.response?.status === 401 && !original._retry && !isAuthFlowRequest) {
 
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -56,12 +55,12 @@ apiInstance.interceptors.response.use(
         queue = [];
         useAuthStore.getState().clearAuth();
         useUserStore.getState().clearUser();
-        return Promise.reject(refreshError);
+        return handleApiError(refreshError);
       } finally {
         isRefreshing = false;
       }
     }
 
-    return Promise.reject(error);
+    return handleApiError(error);
   }
 );
