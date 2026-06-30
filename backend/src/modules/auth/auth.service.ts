@@ -89,3 +89,44 @@ export async function verifyEmail(token: string) {
 
   await UsersService.markAsVerified(user.id);
 }
+
+export async function forgotPassword(email: string) {
+  const user = await UsersService.findByEmail(email);
+
+  if (!user) {
+    return { message: 'Check your email to reset password' };
+  }
+
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+  await prisma.passwordResetToken.deleteMany({ where: { userId: user.id } });
+  await prisma.passwordResetToken.create({
+    data: {
+      tokenHash,
+      userId: user.id,
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 60 минут
+    },
+  });
+
+  await EmailService.sendPasswordResetEmail(email, rawToken);
+  return { message: 'Check your email to reset password' };
+}
+
+export async function resetPassword(rawToken: string, newPassword: string) {
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+  const resetToken = await prisma.passwordResetToken.findUnique({
+    where: { tokenHash },
+  });
+
+  if (!resetToken || resetToken.expiresAt < new Date()) {
+    throw new AppError(ERROR_MESSAGES.AUTH.INVALID_TOKEN, 401, ERROR_CODES.AUTH.INVALID_TOKEN);
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  await UsersService.update(resetToken.userId, { password: hashedPassword });
+  await prisma.passwordResetToken.delete({ where: { id: resetToken.id } });
+}

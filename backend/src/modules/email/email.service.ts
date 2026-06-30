@@ -26,7 +26,7 @@ export async function sendVerificationEmail(email: string, token: string) {
       from: 'Budlo <onboarding@resend.dev>',
       to: email,
       subject: 'Сброс пароля',
-      html: `<p>Нажмите <a href="${url}">сюда</a> для сброса пароля. Ссылка действует 1 час.</p>`,
+      html: `<p>Нажмите <a href="${url}">сюда</a> для сброса пароля. Если вы не отправляли запрос на сброс пароля, просто игнорируйте это письмо.</p>`,
     });
 
     if (error) {
