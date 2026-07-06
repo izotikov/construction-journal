@@ -1,23 +1,20 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ERROR_MESSAGES } from "@shared/api/errors/errorMessages";
-import { RegisterFormData, registerFormSchema } from "@features/registration/model/schema/registerFormSchema";
 import { handleFormSubmit } from "@shared/lib/form/handleFormSubmit";
-import { useRegister } from "@features/registration/model/hooks/useRegister";
-import type { RegisterDto } from "@features/registration/config/type";
+import { useResetPassword } from "@features/reset-password/model/hooks/useResetPassword";
+import { resetPasswordFormSchema, type ResetPasswordFormData } from "@features/reset-password/schema/resetPasswordFormSchema";
 
-export const useRegisterForm = () => {
+export const useResetPasswordForm = (token: string) => {
+  const { mutateAsync: resetPassword, isPending } = useResetPassword();
 
-  const { mutateAsync: register, isPending } = useRegister();
 
-  const methods = useForm<RegisterFormData>({
+  const methods = useForm<ResetPasswordFormData>({
     defaultValues: {
-      email: '',
-      name: '',
       password: '',
       confirmPassword: '',
     },
-    resolver: zodResolver(registerFormSchema),
+    resolver: zodResolver(resetPasswordFormSchema),
     mode: 'onSubmit',
   });
 
@@ -26,11 +23,12 @@ export const useRegisterForm = () => {
     handleSubmit,
   } = methods;
 
-  const onSubmit: SubmitHandler<RegisterFormData> = async ({ confirmPassword, ...data }) => {
-    await handleFormSubmit(register, data, setError, {
+  const onSubmit: SubmitHandler<ResetPasswordFormData> = async (formData) => {
+    await handleFormSubmit(({ password }) => resetPassword({ data: { newPassword: password }, token }), formData, setError, 
+    {
       getErrorMessage: (error) =>
         ERROR_MESSAGES[error.messageCode] ?? ERROR_MESSAGES['DEFAULT'],
-    });
+    })
   };
 
   return {

@@ -27,7 +27,6 @@ export const useForgotPasswordForm = () => {
       getErrorMessage: (error) =>
         ERROR_MESSAGES[error.messageCode] ?? ERROR_MESSAGES['DEFAULT'],
     })
-
   };
 
   return {

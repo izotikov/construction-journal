@@ -5,8 +5,8 @@ import { FullscreenCenterLayout } from "@shared/ui/fullscreen-center-layout/Full
 export function RegistrationPage() {
   return (
     <FullscreenCenterLayout>
-          <BackgroundDecoration />
-          <RegisterForm />
-        </FullscreenCenterLayout>
+      <BackgroundDecoration />
+      <RegisterForm />
+    </FullscreenCenterLayout>
   )
 }

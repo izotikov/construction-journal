@@ -14,17 +14,14 @@ apiInstance.interceptors.request.use((config) => {
 
 let isRefreshing = false;
 let queue: Array<{ resolve: (t: string) => void; reject: (e: unknown) => void }> = [];
-const AUTH_FLOW_ENDPOINTS = ['/auth/refresh-token', '/auth/login', '/auth/register'];
 
 apiInstance.interceptors.response.use(
   (response) => response,
 
   async (error: AxiosError) => {
-    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-    const isAuthFlowRequest = AUTH_FLOW_ENDPOINTS.some((url) => original.url?.includes(url));
-    
+    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean, skipAuthRefresh?: boolean; };
 
-    if (error.response?.status === 401 && !original._retry && !isAuthFlowRequest) {
+    if (error.response?.status === 401 && !original._retry && !original.skipAuthRefresh && !original.url?.includes('/auth/refresh-token')) {
 
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

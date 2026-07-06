@@ -8,6 +8,7 @@ export const ERROR_MESSAGES: ErrorMessages = {
     INVALID_TOKEN: 'Токен невалиден',
     EXPIRED_TOKEN: 'Токен истёк',
     INVALID_CREDENTIALS: 'Неверный email или пароль',
+    INVALID_RESET_PASSWORD_TOKEN: 'Токен смены пароля истёк'
   },
   USER: {
     NOT_FOUND: 'Пользователь не найден',

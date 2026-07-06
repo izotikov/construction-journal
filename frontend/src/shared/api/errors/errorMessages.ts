@@ -5,6 +5,7 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   AUTH_INVALID_TOKEN: "Неверный JWT токен",
   AUTH_EXPIRED_TOKEN: "Ваш JWT токен истёк",
   AUTH_MISSING_TOKEN: "Отсутствует JWT токен",
+  AUTH_INVALID_RESET_PASSWORD_TOKEN: "Срок действия ссылки истёк",
   USER_NOT_FOUND: 'Пользователь не найден',
   USER_ALREADY_EXISTS: "Пользователь с такой почтой уже зарегестрирован",
   COMMON_VALIDATION_ERROR: "Ошибка валидации",

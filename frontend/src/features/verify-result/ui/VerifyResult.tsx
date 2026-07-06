@@ -1,6 +1,5 @@
 import { useSearch } from "@tanstack/react-router";
 
-
 export function VerifyResult() {
   const search = useSearch({ from: '/verify-result' });
   const status = search?.status;
@@ -28,7 +27,6 @@ export function VerifyResult() {
     );
   }
 
-  // Если статус не распознан – показываем нейтральное сообщение
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-2xl font-bold">Подтверждение email</h1>

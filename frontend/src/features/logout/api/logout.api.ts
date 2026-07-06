@@ -1,4 +1,3 @@
-import { User } from '@entities/user/config/type';
 import { apiInstance } from '@shared/api/base';
 
 export const logoutApi = {

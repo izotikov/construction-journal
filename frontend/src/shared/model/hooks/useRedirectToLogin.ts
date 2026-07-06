@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 
-export const useRegistrationRedirect = () => {
+export const useRedirectToLogin = () => {
 
   const navigate = useNavigate();
 

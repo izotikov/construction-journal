@@ -33,7 +33,7 @@ export async function login(res: Response, email: string, password: string) {
 
 export async function logout(res: Response, userId: number) {
   if (userId) {
-    await UsersService.update(userId, { refreshToken: null });{ refreshToken: null }
+    await UsersService.update(userId, { refreshToken: null });
   }
   clearJWT(res);
 }
@@ -121,7 +121,7 @@ export async function resetPassword(rawToken: string, newPassword: string) {
   });
 
   if (!resetToken || resetToken.expiresAt < new Date()) {
-    throw new AppError(ERROR_MESSAGES.AUTH.INVALID_TOKEN, 401, ERROR_CODES.AUTH.INVALID_TOKEN);
+    throw new AppError(ERROR_MESSAGES.AUTH.INVALID_RESET_PASSWORD_TOKEN, 401, ERROR_CODES.AUTH.INVALID_RESET_PASSWORD_TOKEN);
   }
 
   const salt = await bcrypt.genSalt(10);

@@ -3,5 +3,5 @@ import { ForgotPasswordDto, ForgotPasswordResponse } from '@features/forgot-pass
 
 export const forgotPasswordApi = {
   forgotPassword: (data: ForgotPasswordDto) =>
-    apiInstance.post<ForgotPasswordResponse>('/api/auth/forgot-password', data).then(response => response.data),
+    apiInstance.post<ForgotPasswordResponse>('/api/auth/forgot-password', data, {skipAuthRefresh: true}).then(response => response.data),
 };
