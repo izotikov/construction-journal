@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "dist-node",
+    "types": ["node"]
+  },
+  "include": ["vite.config.ts", "scripts/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

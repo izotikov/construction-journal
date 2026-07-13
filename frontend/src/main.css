@@ -1,0 +1,47 @@
+@import 'tailwindcss';
+
+/* @font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('./src/shared/ui/fonts/Inter/Inter-VariableFont_opsz,wght.ttf')
+    format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  src: url('./src/shared/ui/fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf')
+    format('truetype');
+} */
+
+@theme {
+  /* Семантические токены */
+
+  /* Текст */
+  --color-text-primary: var(--color-white);
+  --color-text-secondary: var(--color-gray-300);
+  --color-text-tertiary: var(--color-zinc-500);
+  --color-text-error: var(--color-red-500);
+  --color-text-link: var(--color-indigo-500);
+  --color-text-link-hover: var(--color-indigo-400);
+  --color-text-link-active: var(--color-indigo-600);
+
+  /* Brand / accent */
+  --color-brand: var(--color-indigo-600);
+  --color-brand-hover: var(--color-indigo-500);
+  --color-brand-active: var(--color-indigo-700);
+  --color-brand-subtle: var(--color-indigo-400);
+  --color-brand-subtle-hover: var(--color-indigo-300);
+
+  /* Поверхности / бэкграунды */
+  --color-surface: var(--color-zinc-800);
+  --color-surface-hover: var(--color-zinc-700);
+  --color-surface-raised: var(--color-zinc-600);
+  --color-surface-muted: var(--color-zinc-500);
+  --color-surface-contrast: var(--color-zinc-900);
+
+  /* Статусы */
+  --color-error: var(--color-red-500);
+}

@@ -1,0 +1,18 @@
+FROM node:24-alpine
+
+# python3/make/g++ нужны для нативной компиляции bcrypt при npm install
+RUN apk add --no-cache python3 make g++
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+# generate — пересобирает Prisma Client под custom output (../generated/prisma)
+# migrate deploy — накатывает миграции при каждом старте контейнера (безопасно, идемпотентно)
+# tsx watch — держит hot-reload на смонтированном коде
+CMD ["sh", "-c", "npx prisma generate && npx prisma db push && npx tsx watch src/index.ts"]
