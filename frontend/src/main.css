@@ -5,6 +5,7 @@
 
   --font-sans: 'Rubik', sans-serif;
 
+
   /* Текст */
   --color-text-primary: var(--color-white);
   --color-text-secondary: var(--color-gray-300);
@@ -28,6 +29,7 @@
   --color-surface-muted: var(--color-zinc-500);
   --color-surface-contrast: var(--color-zinc-900);
 
+<<<<<<< HEAD
   --color-bg-dashboard-card: #3a3a40;
 
   /* Статусы */
