@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "name": "construction-kournal",
-=======
   "name": "construction-journal",
->>>>>>> c97ec9c6f179aa1d6d198eeea1e6472b25fea050
   "private": true,
   "version": "0.0.0",
   "type": "module",
