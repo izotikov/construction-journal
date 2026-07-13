@@ -1,23 +1,9 @@
 @import 'tailwindcss';
 
-/* @font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 100 900;
-  src: url('./src/shared/ui/fonts/Inter/Inter-VariableFont_opsz,wght.ttf')
-    format('truetype');
-}
-
-@font-face {
-  font-family: 'Inter';
-  font-style: italic;
-  font-weight: 100 900;
-  src: url('./src/shared/ui/fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf')
-    format('truetype');
-} */
-
 @theme {
   /* Семантические токены */
+
+  --font-sans: 'Rubik', sans-serif;
 
   /* Текст */
   --color-text-primary: var(--color-white);
@@ -42,6 +28,125 @@
   --color-surface-muted: var(--color-zinc-500);
   --color-surface-contrast: var(--color-zinc-900);
 
+  --color-bg-dashboard-card: #3a3a40;
+
   /* Статусы */
   --color-error: var(--color-red-500);
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+
+  /* Статус колонок */
+  --color-col-available: #71717a;
+  --color-col-wip: #6366f1;
+  --color-col-done: #22c55e;
+
+  /* Цвет приоритета (задний фон) */
+  --color-bg-high-priority: #3d1213;
+  --color-bg-medium-priority: #3d1e0e;
+  --color-bg-low-priority: var(--color-bg-dashboard-card);
+
+  /* Цвет приоритета (текст) */
+  --color-text-high-priority: var(--color-red-400);
+  --color-text-medium-priority: var(--color-orange-600);
+  --color-text-low-priority: var(--color-zinc-400);
+}
+
+
+/* Font connection */
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 300;
+  src: url('./shared/ui/fonts/Rubik/Rubik-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: italic;
+  font-weight: 300;
+  src: url('./shared/ui/fonts/Rubik/Rubik-LightItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./shared/ui/fonts/Rubik/Rubik-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: italic;
+  font-weight: 400;
+  src: url('./shared/ui/fonts/Rubik/Rubik-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 500;
+  src: url('./shared/ui/fonts/Rubik/Rubik-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: italic;
+  font-weight: 500;
+  src: url('./shared/ui/fonts/Rubik/Rubik-MediumItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 600;
+  src: url('./shared/ui/fonts/Rubik/Rubik-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: italic;
+  font-weight: 600;
+  src: url('./shared/ui/fonts/Rubik/Rubik-SemiBoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./shared/ui/fonts/Rubik/Rubik-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: italic;
+  font-weight: 700;
+  src: url('./shared/ui/fonts/Rubik/Rubik-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 800;
+  src: url('./shared/ui/fonts/Rubik/Rubik-ExtraBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: italic;
+  font-weight: 800;
+  src: url('./shared/ui/fonts/Rubik/Rubik-ExtraBoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 900;
+  src: url('./shared/ui/fonts/Rubik/Rubik-Black.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: italic;
+  font-weight: 900;
+  src: url('./shared/ui/fonts/Rubik/Rubik-BlackItalic.ttf') format('truetype');
 }

@@ -1,7 +1,10 @@
 import { useAuthStore } from "@entities/auth/useAuthStore";
 import { useLogout } from "@features/logout/model/hooks/useLogout";
+import { Card } from "@pages/dashboard-page/ui/card/Card";
 import { Button } from "@shared/ui/shadcn/button/Button";
 import { Link } from "@tanstack/react-router";
+
+
 
 export const DashboardPage = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -10,6 +13,7 @@ export const DashboardPage = () => {
   return (
     <div>
       <div>DashboardPage</div>
+      <Card />
       
       {isAuthenticated ? (
         <>
