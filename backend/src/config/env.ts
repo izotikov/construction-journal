@@ -2,10 +2,8 @@ import type { StringValue } from "ms";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-<<<<<<< HEAD
-=======
 const DATABASE_URL = `mysql://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@db:3306/${process.env.DATABASE_NAME}`;
->>>>>>> c97ec9c6f179aa1d6d198eeea1e6472b25fea050
+
 
 if (!JWT_SECRET) {
   throw new Error('JWT_SECRET is not defined');
@@ -20,11 +18,7 @@ const JWT_REFRESH_EXPIRES_IN = (process.env.JWT_REFRESH_EXPIRES_IN ?? "7d") as S
 
 export const env = {
   PORT: Number(process.env.PORT) || 3000,
-<<<<<<< HEAD
-  DATABASE_URL: process.env.DATABASE_URL as string,
-=======
   DATABASE_URL,
->>>>>>> c97ec9c6f179aa1d6d198eeea1e6472b25fea050
   DATABASE_USER: process.env.DATABASE_USER as string,
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD as string,
   DATABASE_NAME: process.env.DATABASE_NAME as string,
