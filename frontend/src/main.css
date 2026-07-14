@@ -30,6 +30,7 @@
   --color-surface-contrast: var(--color-zinc-900);
 
   --color-bg-dashboard-card: #3a3a40;
+  --color-bg-executor-field: #3a3a40;
 
   /* Статусы */
   --color-error: var(--color-red-500);

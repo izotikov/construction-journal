@@ -1,8 +1,19 @@
 import { useAuthStore } from "@entities/auth/useAuthStore";
 import { useLogout } from "@features/logout/model/hooks/useLogout";
-import { Card } from "@pages/dashboard-page/ui/card/Card";
+import { Card } from "@pages/dashboard-page/ui/card/ui/Card";
 import { Button } from "@shared/ui/shadcn/button/Button";
 import { Link } from "@tanstack/react-router";
+
+const mockData = {
+  author: {
+    avatarUrl: null,
+    username: "agromov"
+  },
+  executor: {
+    avatarUrl: null,
+    username: "dkozlov"
+  }
+}
 
 export const DashboardPage = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -11,7 +22,7 @@ export const DashboardPage = () => {
   return (
     <div>
       <div>DashboardPage</div>
-      <Card />
+      <Card author={mockData.author} executor={mockData.executor}/>
   
       {isAuthenticated ? (
         <>
