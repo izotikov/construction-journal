@@ -7,6 +7,72 @@ datasource db {
   provider = "mysql"
 }
 
+enum OrganizationRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum ProjectRole {
+  MANAGER
+  MEMBER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+model Organization {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members  OrganizationMember[]
+  projects Project[]
+}
+
+model OrganizationMember {
+  id             Int              @id @default(autoincrement())
+  organizationId Int
+  userId         Int
+  role           OrganizationRole @default(MEMBER)
+  createdAt      DateTime         @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+}
+
+model Project {
+  id             Int      @id @default(autoincrement())
+  name           String
+  description    String?
+  organizationId Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members      ProjectMember[]
+  tasks        Task[]
+}
+
+model ProjectMember {
+  id        Int         @id @default(autoincrement())
+  projectId Int
+  userId    Int
+  role      ProjectRole @default(MEMBER)
+  createdAt DateTime    @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   email        String   @unique
@@ -20,6 +86,10 @@ model User {
   emailVerificationExpires   DateTime?
 
   passwordResetTokens PasswordResetToken[]
+  organizationMemberships OrganizationMember[]
+  projectMemberships      ProjectMember[]
+  assignedTasks           Task[] @relation("TaskAssignee")
+  createdTasks            Task[] @relation("TaskCreator")
 }
 
 model PasswordResetToken {
@@ -39,4 +109,13 @@ model Task {
   estimatedDuration Int 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  assigneeId Int?
+  assignee   User? @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  createdById Int
+  createdBy   User @relation("TaskCreator", fields: [createdById], references: [id], onDelete: Restrict)
 }
