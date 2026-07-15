@@ -1,9 +1,9 @@
-import { Author } from "@pages/dashboard-page/ui/card/config/type";
-import { AuthorBlock } from "@pages/dashboard-page/ui/card/ui/content/AuthorBlock";
+import { AuthorType } from "@pages/dashboard-page/ui/card/config/type";
+import { AuthorBlock } from "@pages/dashboard-page/ui/card/ui/content/card-footer/content/AuthorBlock";
 import { LuCalendarClock, LuClock5 } from "react-icons/lu";
 
 type Props = {
-  author: Author;
+  author: AuthorType;
 }
 
 // TODO: вынести цвет в переменную в main.css, придумать как что красиво сделать

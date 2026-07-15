@@ -1,9 +1,14 @@
-export type Author = {
+export type AuthorType = {
   avatarUrl?: string | null;
   username: string;
 }
 
-export type Executor = {
+export type ExecutorType = {
   avatarUrl?: string | null;
   username: string;
+}
+
+export type CardType = {
+  title: string;
+  description: string;
 }
