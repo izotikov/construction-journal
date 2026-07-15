@@ -30,3 +30,13 @@ model PasswordResetToken {
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  status      String   @default("todo")
+  estimatedDuration Int 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

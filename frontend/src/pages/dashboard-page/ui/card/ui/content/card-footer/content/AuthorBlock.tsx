@@ -1,8 +1,8 @@
 import { UserAvatar } from "@entities/user/ui/UserAvatar";
-import { Author } from "@pages/dashboard-page/ui/card/config/type"
+import { AuthorType } from "@pages/dashboard-page/ui/card/config/type"
 
 type Props = {
-  author: Author;
+  author: AuthorType;
 }
 
 export const AuthorBlock = ({author}: Props) => {

@@ -12,6 +12,11 @@ const mockData = {
   executor: {
     avatarUrl: null,
     username: "dkozlov"
+  },
+  card: {
+    title: 'Армирование фундамента — секция B',
+    description: 'Укладка арматурного каркаса по проектным чертежам. Контроль диаметра прутьев и шага вязки согласно СП 63.13330.',
+    creationDate: ''
   }
 }
 
@@ -22,7 +27,7 @@ export const DashboardPage = () => {
   return (
     <div>
       <div>DashboardPage</div>
-      <Card author={mockData.author} executor={mockData.executor}/>
+      <Card author={mockData.author} executor={mockData.executor} card={mockData.card}/>
   
       {isAuthenticated ? (
         <>

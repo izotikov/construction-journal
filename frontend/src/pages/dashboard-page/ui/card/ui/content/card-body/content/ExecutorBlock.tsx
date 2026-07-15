@@ -1,9 +1,9 @@
 import { UserAvatar } from "@entities/user/ui/UserAvatar";
-import { Executor } from "@pages/dashboard-page/ui/card/config/type";
+import { ExecutorType } from "@pages/dashboard-page/ui/card/config/type";
 import { LuWrench } from "react-icons/lu";
 
 type Props = {
-  executor: Executor;
+  executor: ExecutorType;
 }
 
 export const ExecutorBlock = ({executor}: Props) => {
