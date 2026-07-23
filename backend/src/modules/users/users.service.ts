@@ -1,8 +1,8 @@
-import { Prisma } from '../../../generated/prisma';
-import { AppError } from '../../errors/AppError';
 import { ERROR_MESSAGES } from '../../errors/errorMessages';
 import { ERROR_CODES } from '../../errors/errorRegistry';
+import { withNotFoundHandling } from '../../errors/withNotFoundHandling';
 import { prisma } from '../../prisma/client';
+import type { UpdateUserDto } from './config/type';
 
 export async function findAll() {
   return prisma.user.findMany();
@@ -27,38 +27,60 @@ export async function create(data: { email: string; name: string; password: stri
 }
 
 export async function remove(id: number) {
-  try {
-    await prisma.user.delete({ where: { id } });
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-      throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, 404, ERROR_CODES.USER.NOT_FOUND);
-    }
-    throw error;
-  }
+  return withNotFoundHandling(
+    () => prisma.user.delete({ where: { id } }),
+    ERROR_MESSAGES.USER.NOT_FOUND,
+    ERROR_CODES.USER.NOT_FOUND
+  );
 }
 
-export async function update(id: number, data: Prisma.UserUpdateInput) {
-  return prisma.user.update({ where: { id }, data });
+export async function update(id: number, data: UpdateUserDto) {
+  return withNotFoundHandling(
+    () => prisma.user.update({ where: { id }, data }),
+    ERROR_MESSAGES.USER.NOT_FOUND,
+    ERROR_CODES.USER.NOT_FOUND
+  );
 }
 
+export async function updateRefreshToken(id: number, refreshToken: string | null) {
+  return withNotFoundHandling(
+    () => prisma.user.update({ where: { id }, data: { refreshToken } }),
+    ERROR_MESSAGES.USER.NOT_FOUND,
+    ERROR_CODES.USER.NOT_FOUND
+  );
+}
+
+export async function updatePassword(id: number, password: string) {
+  return withNotFoundHandling(
+    () => prisma.user.update({ where: { id }, data: { password } }),
+    ERROR_MESSAGES.USER.NOT_FOUND,
+    ERROR_CODES.USER.NOT_FOUND
+  );
+}
 
 export async function saveVerificationToken(userId: number, token: string, expires: Date) {
-  return prisma.user.update({
-    where: { id: userId },
-    data: {
+  return withNotFoundHandling(
+    () => prisma.user.update({ 
+      where: { id: userId }, 
+      data: {
       emailVerificationToken: token,
       emailVerificationExpires: expires,
-    },
-  });
+    }, }),
+    ERROR_MESSAGES.USER.NOT_FOUND,
+    ERROR_CODES.USER.NOT_FOUND
+  );
 }
 
 export async function markAsVerified(userId: number) {
-  return prisma.user.update({
-    where: { id: userId },
-    data: {
+  return withNotFoundHandling(
+    () => prisma.user.update({ 
+      where: { id: userId }, 
+      data: {
       isEmailVerified: true,
       emailVerificationToken: null,
       emailVerificationExpires: null,
-    },
-  });
+    }, }),
+    ERROR_MESSAGES.USER.NOT_FOUND,
+    ERROR_CODES.USER.NOT_FOUND
+  );
 }

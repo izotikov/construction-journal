@@ -26,14 +26,14 @@ export async function login(res: Response, email: string, password: string) {
   const accessToken = generateAccessToken(user.id, user.email);
   const refreshToken = generateRefreshToken(res, user.id, user.email);
 
-  await UsersService.update(user.id, { refreshToken });
+  await UsersService.updateRefreshToken(user.id, refreshToken);
 
   return { user: stripUser(user), accessToken };
 }
 
 export async function logout(res: Response, userId: number) {
   if (userId) {
-    await UsersService.update(userId, { refreshToken: null });
+    await UsersService.updateRefreshToken(userId, null);
   }
   clearJWT(res);
 }
@@ -71,9 +71,12 @@ export async function register(email: string, name: string, password: string) {
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 часа
 
   await UsersService.saveVerificationToken(user.id, token, expires);
-  await EmailService.sendVerificationEmail(email, token);
-
-  return { message: 'Check your email to verify your account' };
+  try {
+    await EmailService.sendVerificationEmail(email, token);
+    return { message: 'Check your email to verify your account' };
+  } catch (error) {
+    return { message: 'Email verification failed (check resend rate)' };
+  }
 }
 
 export async function verifyEmail(token: string) {
@@ -127,6 +130,6 @@ export async function resetPassword(rawToken: string, newPassword: string) {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-  await UsersService.update(resetToken.userId, { password: hashedPassword });
+  await UsersService.updatePassword(resetToken.userId, hashedPassword);
   await prisma.passwordResetToken.delete({ where: { id: resetToken.id } });
 }

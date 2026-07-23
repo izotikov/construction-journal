@@ -6,13 +6,11 @@ RUN apk add --no-cache python3 make g++
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 
 EXPOSE 3000
 
-# generate — пересобирает Prisma Client под custom output (../generated/prisma)
-# migrate deploy — накатывает миграции при каждом старте контейнера (безопасно, идемпотентно)
-# tsx watch — держит hot-reload на смонтированном коде
+
 CMD ["sh", "-c", "npx prisma generate && npx prisma db push && npx tsx watch src/index.ts"]

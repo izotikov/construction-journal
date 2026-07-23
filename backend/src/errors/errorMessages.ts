@@ -1,6 +1,5 @@
 import type { ErrorMessages } from "./errorRegistry";
 
-
 export const ERROR_MESSAGES: ErrorMessages = {
 
   AUTH: {
@@ -13,6 +12,10 @@ export const ERROR_MESSAGES: ErrorMessages = {
   USER: {
     NOT_FOUND: 'Пользователь не найден',
     ALREADY_EXISTS: 'Пользователь уже существует',
+  },
+  ORGANIZATION: {
+    NOT_FOUND: 'Организация не найдена',
+    ALREADY_EXISTS: 'Организация уже существует',
   },
   COMMON: {
     VALIDATION_ERROR: 'Ошибка валидации',
