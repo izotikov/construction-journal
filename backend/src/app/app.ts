@@ -4,6 +4,7 @@ import { notFound } from '../middlewares/notFound';
 import { errorHandler } from '../middlewares/errorHandler';
 import { usersRouter } from '../modules/users/users.router';
 import { authRouter } from '../modules/auth/auth.router';
+import { organizationsRouter } from '../modules/organizations/organizations.router';
 import cookieParser from "cookie-parser";
 import cors from 'cors';
 
@@ -21,6 +22,7 @@ export function createApp(): Application {
   // Роуты модулей
   app.use('/api/users', usersRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/organizations', organizationsRouter);
 
 
   app.use(notFound);

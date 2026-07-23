@@ -1,6 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as UsersService from './users.service';
 import { stripUser } from '../../utils/utils';
+import { updateUserSchema } from './config/type';
+import z from 'zod';
 
 export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
   try {
@@ -39,7 +41,7 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
 
     await UsersService.remove(id);
 
-    res.status(200).json({message: `User with id ${id} successfully deleted`});
+    res.status(204).end();
 
   } catch (error) {
     next(error);
@@ -50,14 +52,20 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
   try {
     const id = Number(req.params.id);
     const { name, email } = req.body;
-    if (!id) {
+    if (!id || Number.isNaN(id)) {
       res.status(400).json({ message: 'ID is required' });
       return;
     }
-    if (!name || !email) {
-      res.status(400).json({ message: 'Name and email are required' });
+
+    const parseResult = updateUserSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      res.status(400).json({
+        message: 'Validation failed',
+        errors: z.flattenError(parseResult.error),
+      });
       return;
     }
+
     const user = await UsersService.update(id, { email, name });
     res.status(200).json({ message: 'User updated', user });
   } catch (error) {

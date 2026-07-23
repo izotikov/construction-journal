@@ -1,9 +1,12 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as AuthService from './auth.service';
 import * as UserService from '../users/users.service';
-import type { AuthRequest } from '../../middlewares/auth.middleware';
 import { stripUser } from '../../utils/utils';
 import { env } from '../../config/env';
+import { AppError } from '../../errors/AppError';
+import { ERROR_MESSAGES } from '../../errors/errorMessages';
+import { ERROR_CODES } from '../../errors/errorRegistry';
+import type { AuthRequest } from '../../middlewares/types/type';
 
 export async function register(req: Request, res: Response, next: NextFunction) {
   try {
@@ -48,9 +51,14 @@ export async function logout(req: AuthRequest, res: Response, next: NextFunction
   }
 }
 
-export async function refreshToken(req: Request, res: Response, next: NextFunction) {
+export async function refreshToken(req: AuthRequest, res: Response, next: NextFunction) {
   try {
-    const userId = (req as any).user?.id;
+
+    if (!req.user) {
+      throw new AppError(ERROR_MESSAGES.AUTH.MISSING_TOKEN, 401, ERROR_CODES.AUTH.INVALID_TOKEN);
+    }
+
+    const userId = req.user.id;
     const refreshToken = req.cookies.refreshToken;
 
     const {accessToken} = await AuthService.refreshToken(res, userId, refreshToken);

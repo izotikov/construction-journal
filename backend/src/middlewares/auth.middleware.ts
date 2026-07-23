@@ -1,20 +1,11 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import { AppError } from '../errors/AppError';
 import { ERROR_CODES } from '../errors/errorRegistry';
 import { ERROR_MESSAGES } from '../errors/errorMessages';
+import type { AuthRequest, DecodedToken } from './types/type';
 
-export interface AuthRequest extends Request {
-  user?: { id: number; email: string; name: string };
-  token?: string;
-}
-
-export interface DecodedToken { 
-  id: number; 
-  email: string; 
-  name: string;
-}
 
 export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
