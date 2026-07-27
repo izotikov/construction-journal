@@ -16,6 +16,12 @@ export const ERROR_MESSAGES: ErrorMessages = {
   ORGANIZATION: {
     NOT_FOUND: 'Организация не найдена',
     ALREADY_EXISTS: 'Организация уже существует',
+    MISSING_ID: 'Идентификатор организации не передан',
+  },
+  PROJECT: {
+    NOT_FOUND: 'Проект не найден',
+    ALREADY_EXISTS: 'Проект уже существует',
+    MISSING_ID: 'Идентификатор проекта не передан',
   },
   COMMON: {
     VALIDATION_ERROR: 'Ошибка валидации',

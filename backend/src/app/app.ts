@@ -7,6 +7,7 @@ import { authRouter } from '../modules/auth/auth.router';
 import { organizationsRouter } from '../modules/organizations/organizations.router';
 import cookieParser from "cookie-parser";
 import cors from 'cors';
+import { projectsRouter } from '../modules/projects/projects.router';
 
 export function createApp(): Application {
   const app = express();
@@ -23,6 +24,7 @@ export function createApp(): Application {
   app.use('/api/users', usersRouter);
   app.use('/api/auth', authRouter);
   app.use('/api/organizations', organizationsRouter);
+  app.use('/api/projects', projectsRouter);
 
 
   app.use(notFound);
