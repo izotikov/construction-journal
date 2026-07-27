@@ -1,26 +1,17 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as OrganizationsService from './organizations.service';
-import { UpdateOrganizationSchema, type CreateOrganizationDto } from './config/type';
-import { AppError } from '../../errors/AppError';
-import { ERROR_MESSAGES } from '../../errors/errorMessages';
-import { ERROR_CODES } from '../../errors/errorRegistry';
+import { UpdateOrganizationSchema, type CreateOrganizationDto, type UpdateOrganizationDto } from './config/type';
 import type { AuthRequest } from '../../middlewares/types/type';
 import z from 'zod';
-
+import { assertAuthenticatedUser } from '../../utils/assertEntities/assertEntities';
 
 export async function createOrganization(req: AuthRequest, res: Response, next: NextFunction) {
   try {
-
-    if (!req.user) {
-      throw new AppError(ERROR_MESSAGES.AUTH.MISSING_TOKEN, 401, ERROR_CODES.AUTH.INVALID_TOKEN);
-    }
+    assertAuthenticatedUser(req);
 
     const data: CreateOrganizationDto = req.body;
     const userId = req.user.id;
-    if (!data.name) {
-      res.status(400).json({ message: 'Name is required' });
-      return;
-    }
+
     const organization = await OrganizationsService.create(data, userId);
     res.status(201).json({message: "Organization successfully created", organization});
   } catch (error) {
@@ -30,10 +21,7 @@ export async function createOrganization(req: AuthRequest, res: Response, next: 
 
 export async function getOrganization(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!req.user) {
-      throw new AppError(ERROR_MESSAGES.AUTH.MISSING_TOKEN, 401, ERROR_CODES.AUTH.INVALID_TOKEN);
-    }
-    const organizationId = Number(req.params.id);
+    const organizationId = Number(req.params.organizationId);
     if (!organizationId) {
       res.status(400).json({ message: 'Organization id is required' });
       return;
@@ -51,9 +39,6 @@ export async function getOrganization(req: Request, res: Response, next: NextFun
 
 export async function getMyOrganizations(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!req.user) {
-      throw new AppError(ERROR_MESSAGES.AUTH.MISSING_TOKEN, 401, ERROR_CODES.AUTH.INVALID_TOKEN);
-    }
     const organizations = await OrganizationsService.findAllForUser(req.user.id);
 
     if (!organizations) {
@@ -68,14 +53,20 @@ export async function getMyOrganizations(req: Request, res: Response, next: Next
 
 export async function updateOrganization(req: Request, res: Response, next: NextFunction) {
   try {
-    const id = Number(req.params.id);
-    const { name }: {name: string} = req.body;
-    if (!id || Number.isNaN(id)) {
+    const organizationId = Number(req.params.organizationId);
+    const data: UpdateOrganizationDto = req.body;
+
+    if (Object.keys(data).length === 0 || data === null || data === undefined) {
+      res.status(400).json({ message: 'Nothing to update, empty body' });
+      return;
+    }
+
+    if (!organizationId || Number.isNaN(organizationId)) {
       res.status(400).json({ message: 'ID is required' });
       return;
     }
 
-    const parseResult = UpdateOrganizationSchema.safeParse(req.body);
+    const parseResult = UpdateOrganizationSchema.safeParse(data);
     if (!parseResult.success) {
       res.status(400).json({
         message: 'Validation failed',
@@ -84,7 +75,7 @@ export async function updateOrganization(req: Request, res: Response, next: Next
       return;
     }
 
-    const organization = await OrganizationsService.update(id, { name });
+    const organization = await OrganizationsService.update(organizationId, data);
     res.status(200).json({ message: 'Organization updated', organization });
   } catch (error) {
     next(error);
@@ -93,12 +84,12 @@ export async function updateOrganization(req: Request, res: Response, next: Next
 
 export async function deleteOrganization(req: Request, res: Response, next: NextFunction) {
   try {
-    const id = Number(req.params.id);
-    if (!id || Number.isNaN(id)) {
+    const organizationId = Number(req.params.organizationId);
+    if (!organizationId || Number.isNaN(organizationId)) {
       res.status(400).json({ message: 'ID is required' });
       return;
     }
-    await OrganizationsService.remove(id);
+    await OrganizationsService.remove(organizationId);
     
     res.status(204).end();
   } catch (error) {
