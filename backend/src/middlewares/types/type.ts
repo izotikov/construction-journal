@@ -27,6 +27,18 @@ export interface ProjectMembership {
   role: $Enums.ProjectRole;
 }
 
+export interface Task {
+  createdAt: Date;
+  id: number;
+  title: string;
+  description: string | null;
+  status: string;
+  estimatedDuration: number;
+  projectId: number;
+  assigneeId: number | null;
+  createdById: number;
+}
+
 export interface AuthRequest extends Request {
   user?: DecodedToken;
   token?: string;

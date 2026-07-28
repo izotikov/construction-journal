@@ -55,8 +55,6 @@ export async function getOrganizationProjects(
   next: NextFunction,
 ) {
   try {
-    assertAuthenticatedOrganization(req);
-
     const organizationId = Number(req.params.organizationId);
 
     if (!organizationId) {
@@ -77,13 +75,41 @@ export async function getOrganizationProjects(
   }
 }
 
+export async function getUserProjects(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    assertAuthenticatedUser(req);
+    
+    const userId = req.user.id;
+
+    if (!userId) {
+      res.status(400).json({ message: 'User id is required' });
+      return;
+    }
+
+    const projects = await ProjectsService.findAllForUser(
+      userId,
+    );
+
+    res.status(200).json({
+      message: `Projects for user with id ${userId} found`,
+      projects,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function updateProject(req: Request, res: Response, next: NextFunction) {
   try {
     const projectId = Number(req.params.projectId);
 
     const data: UpdateProjectDto = req.body;
 
-    if (Object.keys(data).length === 0 || data === null || data === undefined) {
+    if (data === null || data === undefined || Object.keys(data).length === 0) {
       res.status(400).json({ message: 'Nothing to update, empty body' });
       return;
     }
