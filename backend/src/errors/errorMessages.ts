@@ -23,6 +23,11 @@ export const ERROR_MESSAGES: ErrorMessages = {
     ALREADY_EXISTS: 'Проект уже существует',
     MISSING_ID: 'Идентификатор проекта не передан',
   },
+  TASK: {
+    NOT_FOUND: 'Задача не найдена',
+    ALREADY_EXISTS: 'Задача уже существует',
+    MISSING_ID: 'Идентификатор задачи не передан',
+  },
   COMMON: {
     VALIDATION_ERROR: 'Ошибка валидации',
     INTERNAL_ERROR: 'Внутренняя ошибка сервера',

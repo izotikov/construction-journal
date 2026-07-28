@@ -56,7 +56,7 @@ export async function updateOrganization(req: Request, res: Response, next: Next
     const organizationId = Number(req.params.organizationId);
     const data: UpdateOrganizationDto = req.body;
 
-    if (Object.keys(data).length === 0 || data === null || data === undefined) {
+    if (data === null || data === undefined || Object.keys(data).length === 0) {
       res.status(400).json({ message: 'Nothing to update, empty body' });
       return;
     }
