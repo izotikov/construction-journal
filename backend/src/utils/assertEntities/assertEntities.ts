@@ -12,12 +12,12 @@ export function assertAuthenticatedUser(req: AuthRequest): asserts req is AuthUs
 
 export function assertAuthenticatedOrganization(req: AuthRequest): asserts req is AuthOrganizationMembershipRequest {
   if (!req.organizationMembership) {
-    throw new AppError(ERROR_MESSAGES.ORGANIZATION.MISSING_ID, 401, ERROR_CODES.ORGANIZATION.MISSING_ID);
+    throw new AppError(ERROR_MESSAGES.COMMON.FORBIDDEN, 403, ERROR_CODES.COMMON.FORBIDDEN);
   }
 }
 
 export function assertAuthenticatedProject(req: AuthRequest): asserts req is AuthProjectMembershipRequest {
   if (!req.projectMembership) {
-    throw new AppError(ERROR_MESSAGES.PROJECT.MISSING_ID, 401, ERROR_CODES.PROJECT.MISSING_ID);
+    throw new AppError(ERROR_MESSAGES.COMMON.FORBIDDEN, 403, ERROR_CODES.COMMON.FORBIDDEN);
   }
 }

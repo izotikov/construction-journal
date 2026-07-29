@@ -18,10 +18,22 @@ export const ERROR_MESSAGES: ErrorMessages = {
     ALREADY_EXISTS: 'Организация уже существует',
     MISSING_ID: 'Идентификатор организации не передан',
   },
+  ORGANIZATION_MEMBER: {
+    NOT_FOUND: 'Член организации не найден',
+    ALREADY_EXISTS: 'Член организации уже существует',
+    MISSING_ID: 'Идентификатор члена организации не передан',
+    LAST_OWNER_CANNOT_BE_REMOVED: "Нельзя понизить или удалить последнего владельца организации",
+    FORBIDDEN: "Недостаточно прав для совершения этого действия",
+  },
   PROJECT: {
     NOT_FOUND: 'Проект не найден',
     ALREADY_EXISTS: 'Проект уже существует',
     MISSING_ID: 'Идентификатор проекта не передан',
+  },
+  PROJECT_MEMBER: {
+    NOT_FOUND: 'Член проекта не найден',
+    ALREADY_EXISTS: 'Член проекта уже существует',
+    MISSING_ID: 'Идентификатор члена проекта не передан'
   },
   TASK: {
     NOT_FOUND: 'Задача не найдена',

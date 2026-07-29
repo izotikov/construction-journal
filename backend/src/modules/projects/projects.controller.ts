@@ -2,13 +2,13 @@ import type { NextFunction, Request, Response } from "express";
 import type { AuthRequest } from "../../middlewares/types/type";
 import { UpdateProjectSchema, type CreateProjectDto, type UpdateProjectDto } from "./config/type";
 import * as ProjectsService from './projects.service';
-import { assertAuthenticatedOrganization, assertAuthenticatedUser } from "../../utils/assertEntities/assertEntities";
+import { assertAuthenticatedUser } from "../../utils/assertEntities/assertEntities";
 import z from "zod";
 
 export async function createProject(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     assertAuthenticatedUser(req);
-    assertAuthenticatedOrganization(req);
+
     const organizationId = Number(req.params.organizationId);
 
     if (!organizationId) {
@@ -31,14 +31,14 @@ export async function createProject(req: AuthRequest, res: Response, next: NextF
   }
 }
 
-export async function getProject(req: Request, res: Response, next: NextFunction) {
+export async function getProject(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const projectId = Number(req.params.projectId);
     if (!projectId) {
       res.status(400).json({ message: 'Project id is required' });
       return;
     }
-    const project = await ProjectsService.findByIdForUser(projectId, req.user.id);
+    const project = await ProjectsService.findById(projectId);
     if (!project) {
       res.status(404).json({ message: 'Project not found' });
       return;
@@ -103,7 +103,7 @@ export async function getUserProjects(
   }
 }
 
-export async function updateProject(req: Request, res: Response, next: NextFunction) {
+export async function updateProject(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const projectId = Number(req.params.projectId);
 
@@ -135,7 +135,7 @@ export async function updateProject(req: Request, res: Response, next: NextFunct
   }
 }
 
-export async function deleteProject(req: Request, res: Response, next: NextFunction) {
+export async function deleteProject(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const projectId = Number(req.params.projectId);
     if (!projectId || Number.isNaN(projectId)) {

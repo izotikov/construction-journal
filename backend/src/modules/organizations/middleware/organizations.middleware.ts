@@ -5,7 +5,7 @@ import type { AuthRequest } from "../../../middlewares/types/type";
 import { prisma } from "../../../prisma/client";
 import { ERROR_CODES } from "../../../errors/errorRegistry";
 import type { OrganizationRole } from "../../../../generated/prisma";
-import { assertAuthenticatedUser } from "../../../utils/assertEntities/assertEntities";
+import { assertAuthenticatedOrganization, assertAuthenticatedUser } from "../../../utils/assertEntities/assertEntities";
 
 
 export async function requireOrganizationMember(req: AuthRequest, res: Response, next: NextFunction) {
@@ -28,7 +28,8 @@ export async function requireOrganizationMember(req: AuthRequest, res: Response,
 
 export function requireOrgRole(...roles: OrganizationRole[]) {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!req.organizationMembership || !roles.includes(req.organizationMembership.role)) {
+    assertAuthenticatedOrganization(req);
+    if (!roles.includes(req.organizationMembership.role)) {
       throw new AppError(ERROR_MESSAGES.COMMON.FORBIDDEN, 403, ERROR_CODES.COMMON.FORBIDDEN);
     }
     next();

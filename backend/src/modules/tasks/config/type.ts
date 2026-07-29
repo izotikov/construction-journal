@@ -1,4 +1,5 @@
 import z from "zod";
+import { TaskStatus } from "../../../../generated/prisma";
 
 export const createTaskSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -12,7 +13,7 @@ export type CreateTaskDto = z.infer<typeof createTaskSchema>;
 export const UpdateTaskSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
-  status: z.string().optional(),
+  status: z.enum(TaskStatus).optional(),
   estimatedDuration: z.number().optional(),
 });
 

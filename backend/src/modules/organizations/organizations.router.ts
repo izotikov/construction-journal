@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
-import { createOrganization, deleteOrganization, getMyOrganizations, getOrganization, updateOrganization } from "./organizations.controller";
+import { createOrganization, deleteOrganization, getMyOrganizations, getOrganization, getOrganizationMembers, leaveOrganization, removeMember, updateMemberRole, updateOrganization } from "./organizations.controller";
 import { requireOrganizationMember, requireOrgRole } from "./middleware/organizations.middleware";
 import { createProject, getOrganizationProjects } from "../projects/projects.controller";
 
@@ -28,6 +28,38 @@ router.delete(
   requireOrganizationMember,
   requireOrgRole('OWNER'),
   deleteOrganization
+);
+
+// ---- Organization members ----
+
+router.get(
+  "/:organizationId/members",
+  authMiddleware,
+  requireOrganizationMember,
+  getOrganizationMembers
+);
+
+router.patch(
+  '/:organizationId/members/:userId',
+  authMiddleware,
+  requireOrganizationMember,
+  requireOrgRole('OWNER', 'ADMIN'),
+  updateMemberRole
+);
+
+router.delete(
+  '/:organizationId/members/me',
+  authMiddleware,
+  requireOrganizationMember,
+  leaveOrganization
+);
+
+router.delete(
+  '/:organizationId/members/:userId',
+  authMiddleware,
+  requireOrganizationMember,
+  requireOrgRole('OWNER', 'ADMIN'),
+  removeMember
 );
 
 // ---------- Projects ----------
