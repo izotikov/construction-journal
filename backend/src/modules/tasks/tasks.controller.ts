@@ -5,8 +5,9 @@ import type { AuthRequest } from "../../middlewares/types/type";
 import { assertAuthenticatedUser } from "../../utils/assertEntities/assertEntities";
 import z from "zod";
 
-export async function createTask(req: Request, res: Response, next: NextFunction) {
+export async function createTask(req: AuthRequest, res: Response, next: NextFunction) {
   try {
+    assertAuthenticatedUser(req);
     const projectId = Number(req.params.projectId);
 
     if (!projectId) {
@@ -98,7 +99,7 @@ export async function getUserTasks(
   }
 }
 
-export async function updateTask(req: Request, res: Response, next: NextFunction) {
+export async function updateTask(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const taskId = Number(req.params.taskId);
     const data: UpdateTaskDto = req.body;
@@ -129,7 +130,7 @@ export async function updateTask(req: Request, res: Response, next: NextFunction
   }
 }
 
-export async function deleteTask(req: Request, res: Response, next: NextFunction) {
+export async function deleteTask(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const taskId = Number(req.params.taskId);
     if (!taskId || Number.isNaN(taskId)) {
