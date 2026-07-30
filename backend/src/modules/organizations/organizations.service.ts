@@ -99,6 +99,10 @@ export async function updateMemberRole(
     ensureActorCanManageTarget(actor, target);
     ensureRoleAssignmentAllowed(actor, target, newRole);
 
+    if (target.role === newRole) {
+      return target;
+    }
+
     if (target.role === "OWNER" && newRole !== "OWNER") {
       const ownersCount = await tx.organizationMember.count({
         where: {
@@ -128,6 +132,34 @@ export async function updateMemberRole(
   }),
   ERROR_MESSAGES.ORGANIZATION_MEMBER.NOT_FOUND,
   ERROR_CODES.ORGANIZATION_MEMBER.NOT_FOUND);
+}
+
+export async function addMember(
+  organizationId: number,
+  userId: number,
+  role: OrganizationRole = 'MEMBER',
+) {
+  return prisma.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new AppError(ERROR_MESSAGES.USER.NOT_FOUND, 404, ERROR_CODES.USER.NOT_FOUND);
+    }
+
+    const existing = await tx.organizationMember.findUnique({
+      where: { organizationId_userId: { organizationId, userId } },
+    });
+    if (existing) {
+      throw new AppError(
+        ERROR_MESSAGES.ORGANIZATION_MEMBER.ALREADY_MEMBER,
+        409,
+        ERROR_CODES.ORGANIZATION_MEMBER.ALREADY_MEMBER,
+      );
+    }
+
+    return tx.organizationMember.create({
+      data: { organizationId, userId, role },
+    });
+  });
 }
 
 // Если участника удаляют должен также удаляться из всех проектов каскадно, реализовать когда сделаю проекты

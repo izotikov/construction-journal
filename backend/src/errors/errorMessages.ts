@@ -24,6 +24,7 @@ export const ERROR_MESSAGES: ErrorMessages = {
     MISSING_ID: 'Идентификатор члена организации не передан',
     LAST_OWNER_CANNOT_BE_REMOVED: "Нельзя понизить или удалить последнего владельца организации",
     FORBIDDEN: "Недостаточно прав для совершения этого действия",
+    ALREADY_MEMBER: "Пользователь уже является членом организации"
   },
   PROJECT: {
     NOT_FOUND: 'Проект не найден',

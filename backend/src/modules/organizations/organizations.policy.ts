@@ -11,7 +11,11 @@ export function ensureActorCanManageTarget(actor: OrganizationMember, target: Or
       ERROR_CODES.ORGANIZATION_MEMBER.FORBIDDEN,
     );
   }
-  if (actor.role === "ADMIN" && target.role !== "MEMBER") {
+  if (
+    actor.role === "ADMIN" &&
+    target.userId !== actor.userId &&
+    target.role !== "MEMBER"
+  ) {
     throw new AppError(
       ERROR_MESSAGES.ORGANIZATION_MEMBER.FORBIDDEN,
       403,
