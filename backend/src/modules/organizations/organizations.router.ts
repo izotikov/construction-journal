@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../../middlewares/auth.middleware";
-import { createOrganization, deleteOrganization, getMyOrganizations, getOrganization, getOrganizationMembers, leaveOrganization, removeMember, updateMemberRole, updateOrganization } from "./organizations.controller";
+import { addMember, createOrganization, deleteOrganization, getMyOrganizations, getOrganization, getOrganizationMembers, leaveOrganization, removeMember, updateMemberRole, updateOrganization } from "./organizations.controller";
 import { requireOrganizationMember, requireOrgRole } from "./middleware/organizations.middleware";
 import { createProject, getOrganizationProjects } from "../projects/projects.controller";
 
@@ -39,6 +39,14 @@ router.get(
   getOrganizationMembers
 );
 
+router.post(
+  "/:organizationId/members",
+  authMiddleware,
+  requireOrganizationMember,
+  requireOrgRole("OWNER", "ADMIN"),
+  addMember
+);
+
 router.patch(
   '/:organizationId/members/:userId',
   authMiddleware,
@@ -61,6 +69,7 @@ router.delete(
   requireOrgRole('OWNER', 'ADMIN'),
   removeMember
 );
+
 
 // ---------- Projects ----------
 
