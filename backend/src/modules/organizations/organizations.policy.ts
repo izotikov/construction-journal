@@ -1,79 +1,33 @@
 import type { OrganizationMember, OrganizationRole } from "../../../generated/prisma";
-import { AppError } from "../../errors/AppError";
 import { ERROR_MESSAGES } from "../../errors/errorMessages";
 import { ERROR_CODES } from "../../errors/errorRegistry";
+import * as hierarchy from "../../shared/access-control/roleHierarchy";
+import type { RoleHierarchyConfig } from "../../shared/access-control/roleHierarchy";
 
-export function ensureActorCanManageTarget(actor: OrganizationMember, target: OrganizationMember) {
-  if (actor.role === "MEMBER") {
-    throw new AppError(
-      ERROR_MESSAGES.ORGANIZATION_MEMBER.FORBIDDEN,
-      403,
-      ERROR_CODES.ORGANIZATION_MEMBER.FORBIDDEN,
-    );
-  }
-  if (
-    actor.role === "ADMIN" &&
-    target.userId !== actor.userId &&
-    target.role !== "MEMBER"
-  ) {
-    throw new AppError(
-      ERROR_MESSAGES.ORGANIZATION_MEMBER.FORBIDDEN,
-      403,
-      ERROR_CODES.ORGANIZATION_MEMBER.FORBIDDEN,
-    );
-  }
+const config: RoleHierarchyConfig<OrganizationRole> = {
+  top: "OWNER",
+  mid: "ADMIN",
+  bottom: "MEMBER",
+  errors: {
+    forbidden: {
+      message: ERROR_MESSAGES.ORGANIZATION_MEMBER.FORBIDDEN,
+      code: ERROR_CODES.ORGANIZATION_MEMBER.FORBIDDEN,
+    },
+    lastOwnerCannotBeRemoved: {
+      message: ERROR_MESSAGES.ORGANIZATION_MEMBER.LAST_OWNER_CANNOT_BE_REMOVED,
+      code: ERROR_CODES.ORGANIZATION_MEMBER.LAST_OWNER_CANNOT_BE_REMOVED,
+    },
+  },
+};
 
-  if (actor.role === "OWNER" && actor.userId === target.userId) {
-    throw new AppError(
-      ERROR_MESSAGES.ORGANIZATION_MEMBER.FORBIDDEN,
-      403,
-      ERROR_CODES.ORGANIZATION_MEMBER.FORBIDDEN,
-    );
-  }
-}
+export const ensureActorCanManageTarget = (actor: OrganizationMember, target: OrganizationMember) =>
+  hierarchy.ensureActorCanManageTarget(actor, target, config);
 
-export function ensureRoleAssignmentAllowed(
+export const ensureRoleAssignmentAllowed = (
   actor: OrganizationMember,
   target: OrganizationMember,
   newRole: OrganizationRole,
-) {
-  // OWNER может понизить самого себя,
-  // но не может "повысить" обратно в OWNER через этот же запрос
-  if (actor.role === "OWNER" && actor.userId === target.userId) {
-    if (newRole === "OWNER") {
-      throw new AppError(
-        ERROR_MESSAGES.ORGANIZATION_MEMBER.FORBIDDEN,
-        403,
-        ERROR_CODES.ORGANIZATION_MEMBER.FORBIDDEN,
-      );
-    }
+) => hierarchy.ensureRoleAssignmentAllowed(actor, target, newRole, config);
 
-    return;
-  }
-
-  // ADMIN может назначать только MEMBER или ADMIN
-  if (actor.role === "ADMIN") {
-    if (newRole !== "MEMBER" && newRole !== "ADMIN") {
-      throw new AppError(
-        ERROR_MESSAGES.ORGANIZATION_MEMBER.FORBIDDEN,
-        403,
-        ERROR_CODES.ORGANIZATION_MEMBER.FORBIDDEN,
-      );
-    }
-  }
-
-  // OWNER может назначать любые роли другим участникам
-}
-
-export function ensureOwnerWillRemain(
-  target: OrganizationMember,
-  ownersCount: number,
-) {
-  if (target.role === "OWNER" && ownersCount === 1) {
-    throw new AppError(
-      ERROR_MESSAGES.ORGANIZATION_MEMBER.LAST_OWNER_CANNOT_BE_REMOVED,
-      403,
-      ERROR_CODES.ORGANIZATION_MEMBER.LAST_OWNER_CANNOT_BE_REMOVED,
-    );
-  }
-}
+export const ensureOwnerWillRemain = (target: OrganizationMember, ownersCount: number) =>
+  hierarchy.ensureOwnerWillRemain(target, ownersCount, config);

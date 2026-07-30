@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as OrganizationsService from './organizations.service';
-import { addMemberSchema, UpdateOrganizationMemberRoleSchema, UpdateOrganizationSchema, type AddMemberDto, type CreateOrganizationDto, type UpdateOrganizationDto, type UpdateOrganizationMemberRoleDto } from './config/type';
+import { addOrganizationMemberSchema, UpdateOrganizationMemberRoleSchema, UpdateOrganizationSchema, type AddOrganizationMemberDto, type CreateOrganizationDto, type UpdateOrganizationDto, type UpdateOrganizationMemberRoleDto } from './config/type';
 import type { AuthRequest } from '../../middlewares/types/type';
 import z from 'zod';
 import { assertAuthenticatedOrganization, assertAuthenticatedUser } from '../../utils/assertEntities/assertEntities';
@@ -162,7 +162,7 @@ export async function updateMemberRole(req: AuthRequest, res: Response, next: Ne
 export async function addMember(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const organizationId = Number(req.params.organizationId);
-    const data: AddMemberDto = req.body;
+    const data: AddOrganizationMemberDto = req.body;
 
     if (!organizationId || Number.isNaN(organizationId)) {
       res.status(400).json({ message: 'Organization ID is required' });
@@ -174,7 +174,7 @@ export async function addMember(req: AuthRequest, res: Response, next: NextFunct
       return;
     }
 
-    const parseResult = addMemberSchema.safeParse(data);
+    const parseResult = addOrganizationMemberSchema.safeParse(data);
     if (!parseResult.success) {
       res.status(400).json({
         message: 'Validation failed',

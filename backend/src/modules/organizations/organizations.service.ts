@@ -186,6 +186,14 @@ export async function removeMember(
       );
     }
 
+    if (actor.userId === target.userId) {
+      throw new AppError(
+        ERROR_MESSAGES.ORGANIZATION_MEMBER.FORBIDDEN,
+        404,
+        ERROR_CODES.ORGANIZATION_MEMBER.FORBIDDEN,
+      );
+    }
+
     ensureActorCanManageTarget(actor, target);
 
     if (target.role === "OWNER") {
