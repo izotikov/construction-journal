@@ -1,8 +1,8 @@
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Response } from "express";
 import type { AuthRequest } from "../../middlewares/types/type";
-import { UpdateProjectSchema, type CreateProjectDto, type UpdateProjectDto } from "./config/type";
+import { addProjectMemberSchema, UpdateProjectMemberRoleSchema, UpdateProjectSchema, type AddProjectMemberDto, type CreateProjectDto, type UpdateProjectDto, type UpdateProjectMemberRoleDto } from "./config/type";
 import * as ProjectsService from './projects.service';
-import { assertAuthenticatedUser } from "../../utils/assertEntities/assertEntities";
+import { assertAuthenticatedProject, assertAuthenticatedUser } from "../../utils/assertEntities/assertEntities";
 import z from "zod";
 
 export async function createProject(req: AuthRequest, res: Response, next: NextFunction) {
@@ -143,6 +143,146 @@ export async function deleteProject(req: AuthRequest, res: Response, next: NextF
       return;
     }
     await ProjectsService.remove(projectId);
+    
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+// MEMBERS
+
+export async function getProjectMembers(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const projectId = Number(req.params.projectId);
+
+    if (!projectId) {
+      res.status(400).json({ message: 'Project id is required' });
+      return;
+    }
+
+    const projectMembers = await ProjectsService.findAllMembers(projectId);
+    res.status(200).json({message: `Members for project with id ${projectId} found`, projectMembers});
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateMemberRole(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    assertAuthenticatedUser(req);
+    assertAuthenticatedProject(req);
+    const projectId = Number(req.params.projectId);
+    const targetUserId = Number(req.params.userId);
+    const actor = req.projectMembership;
+
+    const data: UpdateProjectMemberRoleDto = req.body;
+
+    if (!projectId || Number.isNaN(projectId)) {
+      res.status(400).json({ message: 'Project ID is required' });
+      return;
+    }
+
+    if (!targetUserId || Number.isNaN(targetUserId)) {
+      res.status(400).json({ message: 'User ID is required' });
+      return;
+    }
+
+    if (data === null || data === undefined || Object.keys(data).length === 0) {
+      res.status(400).json({ message: 'Nothing to update, empty body' });
+      return;
+    }
+
+    const parseResult = UpdateProjectMemberRoleSchema.safeParse(data);
+    if (!parseResult.success) {
+      res.status(400).json({
+        message: 'Validation failed',
+        errors: z.flattenError(parseResult.error),
+      });
+      return;
+    }
+
+    const member = await ProjectsService.updateMemberRole(projectId, actor, targetUserId, data.role);
+    res.status(200).json({ message: 'Role updated', member });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function addMember(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const projectId = Number(req.params.projectId);
+    const data: AddProjectMemberDto = req.body;
+
+    if (!projectId || Number.isNaN(projectId)) {
+      res.status(400).json({ message: 'Project ID is required' });
+      return;
+    }
+
+    if (data === null || data === undefined || Object.keys(data).length === 0) {
+      res.status(400).json({ message: 'No enough data, empty body' });
+      return;
+    }
+
+    const parseResult = addProjectMemberSchema.safeParse(data);
+    if (!parseResult.success) {
+      res.status(400).json({
+        message: 'Validation failed',
+        errors: z.flattenError(parseResult.error),
+      });
+      return;
+    }
+
+    const newMember = await ProjectsService.addMember(projectId, data.userId);
+    res.status(200).json({ message: `User added to project with id ${projectId}`, newMember });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function removeMember(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    assertAuthenticatedUser(req);
+    assertAuthenticatedProject(req);
+    const projectId = Number(req.params.projectId);
+    const targetUserId = Number(req.params.userId);
+    const actor = req.projectMembership;
+
+    if (!projectId || Number.isNaN(projectId)) {
+      res.status(400).json({ message: 'Project ID is required' });
+      return;
+    }
+
+    if (!targetUserId || Number.isNaN(targetUserId)) {
+      res.status(400).json({ message: 'User ID is required' });
+      return;
+    }
+
+    await ProjectsService.removeMember(projectId, actor, targetUserId);
+    
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function leaveProject(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    assertAuthenticatedUser(req);
+    const projectId = Number(req.params.projectId);
+    const userId = req.user.id;
+
+    if (!projectId || Number.isNaN(projectId)) {
+      res.status(400).json({ message: 'Project ID is required' });
+      return;
+    }
+
+    if (!userId || Number.isNaN(userId)) {
+      res.status(400).json({ message: 'User ID is required' });
+      return;
+    }
+
+    await ProjectsService.leaveProject(projectId, userId);
     
     res.status(204).end();
   } catch (error) {

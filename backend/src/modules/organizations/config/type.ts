@@ -19,8 +19,8 @@ export const UpdateOrganizationMemberRoleSchema = z.object({
 
 export type UpdateOrganizationMemberRoleDto = z.infer<typeof UpdateOrganizationMemberRoleSchema>;
 
-export const addMemberSchema = z.object({
+export const addOrganizationMemberSchema = z.object({
   userId: z.number(),
 });
 
-export type AddMemberDto = z.infer<typeof addMemberSchema>;
+export type AddOrganizationMemberDto = z.infer<typeof addOrganizationMemberSchema>;
