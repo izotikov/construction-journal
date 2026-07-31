@@ -1,9 +1,10 @@
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Response } from "express";
 import * as TasksService from './tasks.service';
-import { UpdateTaskSchema, type CreateTaskDto, type UpdateTaskDto } from "./config/type";
+import { UpdateTaskAssigneeSchema, UpdateTaskSchema, type CreateTaskDto, type UpdateTaskAssigneeDto, type UpdateTaskDto } from "./config/type";
 import type { AuthRequest } from "../../middlewares/types/type";
-import { assertAuthenticatedUser } from "../../utils/assertEntities/assertEntities";
+import { assertAuthenticatedProject, assertAuthenticatedTask, assertAuthenticatedUser } from "../../utils/assertEntities/assertEntities";
 import z from "zod";
+import { getProjectId } from "../projects/utils/helper";
 
 export async function createTask(req: AuthRequest, res: Response, next: NextFunction) {
   try {
@@ -140,6 +141,34 @@ export async function deleteTask(req: AuthRequest, res: Response, next: NextFunc
     await TasksService.remove(taskId);
     
     res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function assignTask(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    assertAuthenticatedProject(req);
+    assertAuthenticatedTask(req);
+    const task = req.task;
+
+    const data: UpdateTaskAssigneeDto = req.body;
+
+    if (data === null || data === undefined || Object.keys(data).length === 0) {
+      res.status(400).json({ message: 'Nothing to update, empty body' });
+      return;
+    }
+
+    const parseResult = UpdateTaskAssigneeSchema.safeParse(data);
+    if (!parseResult.success) {
+      res.status(400).json({
+        message: 'Validation failed',
+        errors: z.flattenError(parseResult.error),
+      });
+      return;
+    }
+    const assignedTask = await TasksService.setAssignee(task, data.assigneeId, req.projectMembership);
+    res.status(200).json({ message: 'Task assignee updated', assignedTask });
   } catch (error) {
     next(error);
   }

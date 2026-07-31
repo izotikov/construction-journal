@@ -4,12 +4,14 @@ import { ERROR_MESSAGES } from "../../../errors/errorMessages";
 import { AppError } from "../../../errors/AppError";
 import { prisma } from "../../../prisma/client";
 import { ERROR_CODES } from "../../../errors/errorRegistry";
-import type { ProjectMember, ProjectRole } from "../../../../generated/prisma";
+import type { ProjectRole } from "../../../../generated/prisma";
 import { assertAuthenticatedUser } from "../../../utils/assertEntities/assertEntities";
+import { getProjectId } from "../utils/helper";
 
 export async function requireProjectMember(req: AuthRequest, res: Response, next: NextFunction) {
   assertAuthenticatedUser(req);
-  const projectId = Number(req.params.projectId);
+  
+  const projectId = getProjectId(req);
 
   const userId = req.user.id;
 
