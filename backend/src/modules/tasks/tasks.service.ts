@@ -1,8 +1,11 @@
+import type { ProjectMember, Task } from "../../../generated/prisma";
+import { AppError } from "../../errors/AppError";
 import { ERROR_MESSAGES } from "../../errors/errorMessages";
 import { ERROR_CODES } from "../../errors/errorRegistry";
 import { withNotFoundHandling } from "../../errors/withNotFoundHandling";
 import { prisma } from "../../prisma/client";
 import type { CreateTaskDto, UpdateTaskDto } from "./config/type";
+import { ensureActorCanAssignTask } from "./utils/helper";
 
 export async function create(data: CreateTaskDto, createdById: number, projectId: number) {
   return prisma.task.create({
@@ -65,4 +68,42 @@ export async function remove(id: number) {
     ERROR_MESSAGES.TASK.NOT_FOUND,
     ERROR_CODES.TASK.NOT_FOUND
   );
+}
+
+export async function setAssignee(
+  task: Task,
+  newAsassigneeId: number | null,
+  actor: ProjectMember
+) {
+  return prisma.$transaction(async (tx) => {
+    ensureActorCanAssignTask(actor, task.assigneeId, newAsassigneeId);
+    if (newAsassigneeId !== null) {
+      const membership = await tx.projectMember.findUnique({
+        where: {
+          projectId_userId: {
+            projectId: task.projectId,
+            userId: newAsassigneeId,
+          },
+        },
+      });
+
+      if (!membership) {
+        throw new AppError(
+          ERROR_MESSAGES.PROJECT_MEMBER.NOT_FOUND,
+          404,
+          ERROR_CODES.PROJECT_MEMBER.NOT_FOUND,
+        );
+      }
+    }
+
+    return withNotFoundHandling(
+      () =>
+        tx.task.update({
+          where: { id: task.id },
+          data: { assigneeId: newAsassigneeId },
+        }),
+      ERROR_MESSAGES.TASK.NOT_FOUND,
+      ERROR_CODES.TASK.NOT_FOUND,
+    );
+  });
 }

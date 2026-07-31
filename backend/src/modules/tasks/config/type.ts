@@ -18,3 +18,9 @@ export const UpdateTaskSchema = z.object({
 });
 
 export type UpdateTaskDto = z.infer<typeof UpdateTaskSchema>;
+
+export const UpdateTaskAssigneeSchema = z.object({
+  assigneeId: z.number().nullable(),
+});
+
+export type UpdateTaskAssigneeDto = z.infer<typeof UpdateTaskAssigneeSchema>;
