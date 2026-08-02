@@ -2,7 +2,7 @@ import { useMe } from "@entities/user/model/hooks/useMe";
 
 export function ProfilePage() {
   const {data: user, isLoading, isError} = useMe();
-  console.log(isLoading, user);
+
   if (isLoading) {
     return <div>Loading...</div>
   }

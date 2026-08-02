@@ -1,6 +1,5 @@
 import { useAuthStore } from "@entities/auth/useAuthStore";
 import { useMe } from "@entities/user/model/hooks/useMe";
-import { useUserStore } from "@entities/user/model/useUserStore";
 import { ReactNode, useEffect } from "react";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -9,7 +8,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     clearAuth,
     setInitialized,
   } = useAuthStore();
-  const { status } = useMe();
+  const { data, status } = useMe();
 
   useEffect(() => {
     if (status === 'success') {

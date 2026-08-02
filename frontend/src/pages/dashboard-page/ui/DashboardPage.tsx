@@ -3,6 +3,7 @@ import { useLogout } from "@features/logout/model/hooks/useLogout";
 import { Card } from "@pages/dashboard-page/ui/card/ui/Card";
 import { Button } from "@shared/ui/shadcn/button/Button";
 import { Link } from "@tanstack/react-router";
+import {Header} from "@widgets/header/ui/Header";
 
 const mockData = {
   author: {
@@ -25,8 +26,8 @@ export const DashboardPage = () => {
   const { mutateAsync: logout, isPending, error } = useLogout();
 
   return (
-    <div>
-      <div>DashboardPage</div>
+    <div className="p-1">
+      <Header />
       <Card author={mockData.author} executor={mockData.executor} card={mockData.card}/>
   
       {isAuthenticated ? (

@@ -7,6 +7,7 @@ import { AppError } from '../../errors/AppError';
 import { ERROR_MESSAGES } from '../../errors/errorMessages';
 import { ERROR_CODES } from '../../errors/errorRegistry';
 import type { AuthRequest } from '../../middlewares/types/type';
+import { assertAuthenticatedUser } from '../../utils/assertEntities/assertEntities';
 
 export async function register(req: Request, res: Response, next: NextFunction) {
   try {
@@ -70,7 +71,8 @@ export async function refreshToken(req: AuthRequest, res: Response, next: NextFu
 
 export async function getMe(req: AuthRequest, res: Response, next: NextFunction) {
   if (!req.user) return res.status(401).json({message: "Unauthorized"});
-  const user = await UserService.findById(req.user?.id);
+  assertAuthenticatedUser(req);
+  const user = await UserService.findById(req.user.id);
   if (!user) return res.status(404).json({message: "User not found"});
   res.status(200).json({ user: stripUser(user)});
 }
